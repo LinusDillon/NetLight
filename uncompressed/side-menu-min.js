@@ -1,0 +1,1 @@
+(function(e,a){var d=a.getElementById("layout"),f=a.getElementById("menu"),c=a.getElementById("menuLink");function b(j,k){var h=j.className.split(/\s+/),l=h.length,g=0;for(;g<l;g++){if(h[g]===k){h.splice(g,1);break}}if(l===h.length){h.push(k)}j.className=h.join(" ")}c.onclick=function(h){var g="active";h.preventDefault();b(d,g);b(f,g);b(c,g)}}(this,this.document));

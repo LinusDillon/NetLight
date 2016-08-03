@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Net Light</title>
+   	<meta charset="utf-8">
+   	<link rel="stylesheet" href="pure-min.css" />
+   	<link rel="stylesheet" href="netlight-min.css" />
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+	<form class="pure-form pure-form-aligned">
+		<fieldset>
+			<legend>Master Control</legend>
+			<div class="pure-control-group">
+			  	<label for="current_lightEnabled">Power</label>
+				<button id="current_lightEnabled" class="pure-button button-xlarge" type="button">???</button>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="current_lightLevel">Brightness</label>
+				<input id="current_lightLevel" type="range" min="0" max="255">
+			</div>
+		</fieldset>
+		 <fieldset>
+			 <legend>Effect</legend>
+			 <div class="pure-control-group">
+			  	<label for="current_effect">Effect</label>
+				<select id="current_effect">
+					<option value="1">Fixed Colour</option>
+					<option value="2">Cycle through Rainbow</option>
+					<option value="3">Cross fase between two colours</option>
+					<option value="4">Cross fase between random colours</option>
+					<option value="5">Waves flowing from a point</option>
+					<option value="6">Coloured sparkles</option>
+				</select>
+			</div>
+			 <div class="pure-control-group">
+			  	<label for="current_color1">Colour 1</label>
+				<div class="cp cp-default" id="current_color1" ></div>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="current_color2">Colour 2</label>
+				<div class="cp cp-default" id="current_color2" ></div>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="current_time1_min">Time 1</label>
+				<input id="current_time1_min" type="number" min="0" max="255">
+				to
+				<input id="current_time1_max" type="number" min="0" max="255">
+				ms
+			</div>
+			<div class="pure-control-group">
+			  	<label for="current_time1_min">Time 2</label>
+				<input id="current_time2_min" type="number" min="0" max="255">
+				to
+				<input id="current_time2_max" type="number" min="0" max="255">
+				ms
+			</div>
+			<div class="pure-control-group">
+			  	<label></label>
+				<button id="apply" class="pure-button" type="button">Apply</button>
+			</div>
+		</fieldset>
+		<fieldset>
+			 <legend>Settings</legend>
+			 <div class="pure-control-group">
+			  	<label>Actions</label>
+				<button class="pure-button">Reset Network Settings</button>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="mqtt_server">MQTT Server</label>
+			  	<input id="mqtt_server" type="text">
+			</div>
+			<div class="pure-control-group">
+			  	<label for="mqtt_port">MQTT Port</label>
+			  	<input id="mqtt_port" type="text">
+			</div>
+			<div class="pure-control-group">
+			  	<label for="mqtt_idx">MQTT Id</label>
+			  	<input id="mqtt_idx" type="text">
+			</div>
+			<div class="pure-control-group">
+			  	<label for="flashSizeReal">Real Flash Size</label>
+			  	<input id="flashSizeReal" type="text" readonly>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="flashSizeCompiler">Compiler Flash Size</label>
+			  	<input id="flashSizeCompiler" type="text" readonly>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="freeHeap">Free Heap</label>
+			  	<input id="freeHeap" type="text" readonly>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="sketchSize">Sketch Size</label>
+			  	<input id="sketchSize" type="text" readonly>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="sketchFree">Sketch Free</label>
+			  	<input id="sketchFree" type="text" readonly>
+			</div>
+		</fieldset>
+	</div>
+	</form>
+	<script type="text/javascript" src="colorpicker-min.js"></script>
+	<script type="text/javascript" src="netlight-min.js"></script>
+</body>
+</html>
