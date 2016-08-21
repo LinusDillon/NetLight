@@ -1,8 +1,8 @@
 # Patterns matching CSS files that should be minified. Files with a -min.css
 # suffix will be ignored.
 
-#TARGET = NETLIGHT
-TARGET = RUDY
+TARGET = NETLIGHT
+#TARGET = RUDY
 
 ifeq ($(TARGET),NETLIGHT)
 	PNG_FILES = $(wildcard favicons/*.png)

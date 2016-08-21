@@ -1,3 +1,8 @@
+body {
+    background-color: #101010;
+    color: #ffffff;
+}
+
 .picker-wrapper, 
 .slide-wrapper {
     position: relative;

@@ -3,9 +3,8 @@
 #include "EspDebug.h"
 
 NetLightState state;
+NetLightStateAnim animationStates[ANIM_CHANELS];
 
-HtmlColor htmlColor1;
-HtmlColor htmlColor2;
 
 String nextField(String csv, int* pos)
 {
@@ -45,23 +44,9 @@ String NetLightState::toString()
 {
   espDebug.println("state toString");
 
-  String csv = String(state.lightEnabled);
+  String csv = String(this->lightEnabled);
   csv += ",";
-  csv += state.lightLevel;
-  csv += ",";
-  csv += rgbw2html(state.color1);
-  csv += ",";
-  csv += rgbw2html(state.color2);
-  csv += ",";
-  csv += state.time1_min;
-  csv += ",";
-  csv += state.time1_max;
-  csv += ",";
-  csv += state.time2_min;
-  csv += ",";
-  csv += state.time2_max;
-  csv += ",";
-  csv += state.lightMode;
+  csv += this->lightLevel;
 
   espDebug.println(csv);
   return csv;
@@ -83,33 +68,84 @@ bool NetLightState::fromString(String csv)
   
   this->lightLevel = nextField(csv, &pos).toInt();
   espDebug.println(this->lightLevel);
+}
+
+String NetLightState::allAnimToString()
+{
+  String csv = "";
+  for (int i = 0; i < ANIM_CHANELS; i ++)
+  {
+    csv += i;
+    csv += ',';
+    csv += animationStates[i].toString();
+    csv += "\n";
+  }
+  return csv;
+}
+
+String NetLightState::animToString(int index)
+{
+  return String(index) + ',' + this->animationStates[index].toString();
+}
+
+int NetLightState::animFromString(String csv)
+{
+  int pos = 0;
+  int index = nextField(csv, &pos).toInt();  
+  if (this->animationStates[index].fromString(csv, &pos))
+  {
+    return index;
+  }
+  return -1;
+}
+    
+String NetLightStateAnim::toString()
+{
+  String csv = String(rgbw2html(this->color1));
+  csv += ",";
+  csv += rgbw2html(this->color2);
+  csv += ",";
+  csv += this->time1_min;
+  csv += ",";
+  csv += this->time1_max;
+  csv += ",";
+  csv += this->time2_min;
+  csv += ",";
+  csv += this->time2_max;
+  csv += ",";
+  csv += this->lightMode;
+
+  espDebug.println(csv);
+  return csv;
+}
+
+bool NetLightStateAnim::fromString(String csv, int* pos)
+{
+  bool effectChanged = false;
   
-  htmlColor1.Parse<HtmlColorNames>(nextField(csv, &pos));
-  this->color1 = RgbwColor(htmlColor1);
+  this->color1 = html2rgbw(nextField(csv, pos));
   espDebug.println(rgbw2html(this->color1));
   
-  htmlColor2.Parse<HtmlColorNames>(nextField(csv, &pos));
-  this->color2 = RgbwColor(htmlColor2);
+  this->color2 = html2rgbw(nextField(csv, pos));
   espDebug.println(rgbw2html(this->color2));
   
-  this->time1_min = nextField(csv, &pos).toInt();
+  this->time1_min = nextField(csv, pos).toInt();
   espDebug.println(this->time1_min);
   
-  this->time1_max = nextField(csv, &pos).toInt();
+  this->time1_max = nextField(csv, pos).toInt();
   espDebug.println(this->time1_max);
   
-  this->time2_min = nextField(csv, &pos).toInt();
+  this->time2_min = nextField(csv, pos).toInt();
   espDebug.println(this->time2_min);
   
-  this->time2_max = nextField(csv, &pos).toInt();
+  this->time2_max = nextField(csv, pos).toInt();
   espDebug.println(this->time2_max);  
 
-  int lightMode = nextField(csv, &pos).toInt();
+  int lightMode = nextField(csv, pos).toInt();
   if (lightMode != this->lightMode)
   {
     this->lightMode = lightMode;
     effectChanged = true;
   }
-  espDebug.println(this->lightMode);  
 }
 

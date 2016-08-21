@@ -69,3 +69,42 @@ String rgbw2html(RgbwColor& col)
   return String(buf);
 }
 
+RgbwColor html2rgbw(String html)
+{
+  const char* htmlCstr = html.c_str();
+  int len = html.length();
+
+  if (*htmlCstr == '#')
+  {
+    htmlCstr ++;
+    len --;
+  }
+  unsigned long number = strtoul(htmlCstr, NULL, 16);
+  
+  if (len == 6)
+  {
+    // #rrggbb
+    return RgbwColor((number >> 16) & 0xFF, (number >> 8) & 0xFF, number & 0xFF, 0);
+  }
+  else if (len == 8)
+  {
+    // #rrggbbaa
+    return RgbwColor((number >> 24) & 0xFF, (number >> 16) & 0xFF, (number >> 8) & 0xFF, number & 0xFF);    
+  }
+  else 
+  {
+    // Error - return black
+    return RgbwColor(0);
+  }
+}
+
+RgbwColor applyBrightness(RgbwColor in, byte brightness)
+{
+  return RgbwColor((uint16_t)in.R * brightness / 255, (uint16_t)in.G * brightness / 255, (uint16_t)in.B * brightness / 255,  (uint16_t)in.W * brightness / 255);  
+}
+
+RgbwColor scaleRGB(RgbwColor in, byte scale)
+{
+  return RgbwColor((uint16_t)in.R * scale / 255, (uint16_t)in.G * scale / 255, (uint16_t)in.B * scale / 255, 255 - scale);
+}
+

@@ -2,15 +2,16 @@
 
 'use strict';
 
-    var lightEnabledButton = document.getElementById("current_lightEnabled");
-    var colorPicker1Hex;
-    var colorPicker2Hex;
-    var colorPicker1 = new ColorPicker(document.getElementById('current_color1'), function (hex) {
-        colorPicker1Hex = hex;
-    });
-    var colorPicker2 = new ColorPicker(document.getElementById('current_color2'), function (hex) {
-        colorPicker2Hex = hex;
-    });
+    var colorHex = {};
+    var lightEnabledButton = document.getElementById("lightEnabled");
+    // var colorPicker1Hex;
+    // var colorPicker2Hex;
+    // var colorPicker1 = new ColorPicker(document.getElementById('anim0_color1'), function (hex) {
+    //     colorPicker1Hex = hex;
+    // });
+    // var colorPicker2 = new ColorPicker(document.getElementById('anim0_color2'), function (hex) {
+    //     colorPicker2Hex = hex;
+    // });
 
     function addClass(el, className) {
         if (el.classList) {
@@ -90,28 +91,43 @@
     function getUiStateAsCsv() {
         var csv = "State";
         csv += "," + (getUiButtonState(lightEnabledButton) ? 1 : 0);
-        csv += "," + document.getElementById("current_lightLevel").value;
-        csv += "," + colorPicker1Hex;
-        csv += "," + colorPicker2Hex;
-        csv += "," + document.getElementById("current_time1_min").value;
-        csv += "," + document.getElementById("current_time1_max").value;
-        csv += "," + document.getElementById("current_time2_min").value;
-        csv += "," + document.getElementById("current_time2_max").value;
-        csv += "," + document.getElementById("current_effect").value;
+        csv += "," + document.getElementById("lightLevel").value;
+        return csv;
+    }
+
+    function animStatePrefix(i) {
+        return "anim" + i;
+    }
+
+    function getUiAnimStateAsCsv(i) {
+        var prefix = animStatePrefix(i);
+        var csv = "" + i;
+        csv += "," + colorHex[prefix + "_color1"];
+        csv += "," + colorHex[prefix + "_color2"];;
+        csv += "," + document.getElementById("anim0_time1_min").value;
+        csv += "," + document.getElementById("anim0_time1_max").value;
+        csv += "," + document.getElementById("anim0_time2_min").value;
+        csv += "," + document.getElementById("anim0_time2_max").value;
+        csv += "," + document.getElementById("anim0_effect").value;
         return csv;
     }
 
     function applyStateToUi(csv) {
         var stateValues = csv.split(",");
         setUiButtonState(lightEnabledButton, parseInt(stateValues[1], 10));
-        document.getElementById("current_lightLevel").value = stateValues[2];
-        colorPicker1.setHex(stateValues[3]);
-        colorPicker2.setHex(stateValues[4]);
-        document.getElementById("current_time1_min").value = stateValues[5];
-        document.getElementById("current_time1_max").value = stateValues[6];
-        document.getElementById("current_time2_min").value = stateValues[7];
-        document.getElementById("current_time2_max").value = stateValues[8];
-        document.getElementById("current_effect").value = stateValues[9];
+        document.getElementById("lightLevel").value = stateValues[2];
+    }
+
+    function applyAnimStateToUi(csv) {
+        var anims = csv.split("\n");
+        var animValues = anims[0].split(",");
+        colorPicker1.setHex(animValues[1]);
+        colorPicker2.setHex(animValues[2]);
+        document.getElementById("anim0_time1_min").value = animValues[3];
+        document.getElementById("anim0_time1_max").value = animValues[4];
+        document.getElementById("anim0_time2_min").value = animValues[5];
+        document.getElementById("anim0_time2_max").value = animValues[6];
+        document.getElementById("anim0_effect").value = animValues[7];
     }
 
     function handleInfoResponse() {
@@ -127,6 +143,15 @@
         if (this.status >= 200 && this.status < 400) {
             console.log("RESPONSE: " + this.responseText);
             applyStateToUi(this.responseText);
+        } else {
+            console.log("Server responded with status: " + this.status);
+        }
+    }
+
+    function handleAnimStatusResponse() {
+        if (this.status >= 200 && this.status < 400) {
+            console.log("RESPONSE: " + this.responseText);
+            applyAnimStateToUi(this.responseText);
         } else {
             console.log("Server responded with status: " + this.status);
         }
@@ -153,23 +178,63 @@
     }
 
     function setState() {
-        var stateCsv = getUiStateAsCsv();
+        var csv = getUiStateAsCsv();
         var request = new XMLHttpRequest();
         request.open('PUT', 'status', true);
         request.setRequestHeader('Content-Type', 'text/csv');
         request.onload = handleStatusResponse;
         request.onerror = handleError;
-        console.log("REQUEST: " + stateCsv);
-        request.send(stateCsv);
+        console.log("REQUEST: " + csv);
+        request.send(csv);
     }
 
-    document.getElementById("current_lightEnabled").addEventListener("click", function () {
+    function getAnimState() {
+        var request = new XMLHttpRequest();
+        request.open('GET', 'anim');
+        request.onload = handleAnimStatusResponse;
+        request.onerror = handleError;
+        request.send();
+    }
+
+    function setAnimState(i) {
+        var csv = getUiAnimStateAsCsv(i);
+        var request = new XMLHttpRequest();
+        request.open('PUT', 'anim', true);
+        request.setRequestHeader('Content-Type', 'text/csv');
+        request.onerror = handleError;
+        console.log("REQUEST: " + csv);
+        request.send(csv);
+    }
+
+    function initAnimState(i) {
+        var prefix = animStatePrefix(i);
+        document.getElementById(prefix + "_apply").addEventListener("click", function () { 
+            setAnimState(i);
+        });        
+        var colorPicker1 = new ColorPicker(document.getElementById(prefix + "_color1"), function (hex) {
+            colorHex[prefix + "_color1"] = hex;
+        });
+        var colorPicker2 = new ColorPicker(document.getElementById(prefix + "_color2"), function (hex) {
+            colorHex[prefix + "_color2"] = hex;
+        });
+        colorHex[prefix + "_color1"] = "#000000";
+        colorHex[prefix + "_color2"] = "#000000";
+    }
+
+    document.getElementById("lightEnabled").addEventListener("click", function () {
         setUiButtonState(lightEnabledButton, !getUiButtonState(lightEnabledButton));
         setState();
     });
-    document.getElementById("apply").addEventListener("click", setState);
+    document.getElementById("lightLevel").addEventListener("change", function () {
+        setState();
+    });
+
+
+    initAnimState(0);
+    initAnimState(1);
 
     getState();
+    getAnimState();
     getInfo();
 
 }());

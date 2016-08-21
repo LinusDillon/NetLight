@@ -14,19 +14,20 @@
 		<fieldset>
 			<legend>Master Control</legend>
 			<div class="pure-control-group">
-			  	<label for="current_lightEnabled">Power</label>
-				<button id="current_lightEnabled" class="pure-button button-xlarge" type="button">???</button>
+			  	<label for="lightEnabled">Power</label>
+				<button id="lightEnabled" class="pure-button button-xlarge" type="button">???</button>
 			</div>
 			<div class="pure-control-group">
-			  	<label for="current_lightLevel">Brightness</label>
-				<input id="current_lightLevel" type="range" min="0" max="255">
+			  	<label for="lightLevel">Brightness</label>
+				<input id="lightLevel" type="range" min="0" max="255">
 			</div>
 		</fieldset>
-		 <fieldset>
-			 <legend>Effect</legend>
+		<fieldset>
+			 <legend>Channel 1</legend>
 			 <div class="pure-control-group">
-			  	<label for="current_effect">Effect</label>
-				<select id="current_effect">
+			  	<label for="anim0_effect">Effect</label>
+				<select id="anim0_effect">
+					<option value="0">None</option>
 					<option value="1">Fixed Colour</option>
 					<option value="2">Cycle through Rainbow</option>
 					<option value="3">Cross fase between two colours</option>
@@ -36,30 +37,71 @@
 				</select>
 			</div>
 			 <div class="pure-control-group">
-			  	<label for="current_color1">Colour 1</label>
-				<div class="cp cp-default" id="current_color1" ></div>
+			  	<label for="anim0_color1">Colour 1</label>
+				<div class="cp cp-default" id="anim0_color1" ></div>
 			</div>
 			<div class="pure-control-group">
-			  	<label for="current_color2">Colour 2</label>
-				<div class="cp cp-default" id="current_color2" ></div>
+			  	<label for="anim0_color2">Colour 2</label>
+				<div class="cp cp-default" id="anim0_color2" ></div>
 			</div>
 			<div class="pure-control-group">
-			  	<label for="current_time1_min">Time 1</label>
-				<input id="current_time1_min" type="number" min="0" max="255">
+			  	<label for="anim0_time1_min">Time 1</label>
+				<input id="anim0_time1_min" type="number" min="0" max="255">
 				to
-				<input id="current_time1_max" type="number" min="0" max="255">
+				<input id="anim0_time1_max" type="number" min="0" max="255">
 				ms
 			</div>
 			<div class="pure-control-group">
-			  	<label for="current_time1_min">Time 2</label>
-				<input id="current_time2_min" type="number" min="0" max="255">
+			  	<label for="anim0_time1_min">Time 2</label>
+				<input id="anim0_time2_min" type="number" min="0" max="255">
 				to
-				<input id="current_time2_max" type="number" min="0" max="255">
+				<input id="anim0_time2_max" type="number" min="0" max="255">
 				ms
 			</div>
 			<div class="pure-control-group">
 			  	<label></label>
-				<button id="apply" class="pure-button" type="button">Apply</button>
+				<button id="anim0_apply" class="pure-button" type="button">Apply</button>
+			</div>
+		</fieldset>
+		<fieldset>
+			 <legend>Channel 2</legend>
+			 <div class="pure-control-group">
+			  	<label for="anim1_effect">Effect</label>
+				<select id="anim1_effect">
+					<option value="0">None</option>
+					<option value="1">Fixed Colour</option>
+					<option value="2">Cycle through Rainbow</option>
+					<option value="3">Cross fase between two colours</option>
+					<option value="4">Cross fase between random colours</option>
+					<option value="5">Waves flowing from a point</option>
+					<option value="6">Coloured sparkles</option>
+				</select>
+			</div>
+			 <div class="pure-control-group">
+			  	<label for="anim1_color1">Colour 1</label>
+				<div class="cp cp-default" id="anim1_color1" ></div>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="anim1_color2">Colour 2</label>
+				<div class="cp cp-default" id="anim1_color2" ></div>
+			</div>
+			<div class="pure-control-group">
+			  	<label for="anim1_time1_min">Time 1</label>
+				<input id="anim1_time1_min" type="number" min="0" max="255">
+				to
+				<input id="anim1_time1_max" type="number" min="0" max="255">
+				ms
+			</div>
+			<div class="pure-control-group">
+			  	<label for="anim1_time1_min">Time 2</label>
+				<input id="anim1_time2_min" type="number" min="0" max="255">
+				to
+				<input id="anim1_time2_max" type="number" min="0" max="255">
+				ms
+			</div>
+			<div class="pure-control-group">
+			  	<label></label>
+				<button id="anim1_apply" class="pure-button" type="button">Apply</button>
 			</div>
 		</fieldset>
 		<fieldset>

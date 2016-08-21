@@ -37,9 +37,26 @@ void handlePutStatus()
   String csv = server.arg("plain");
   if (state.fromString(csv))
   {
-    StartStateAnimation();
+    StartStateAnimation(0);
   }
   sendStatusResponse();
+}
+
+void handleGetAnimStatus() 
+{
+  String message = state.allAnimToString();
+  server.send(200, "text/csv", message);
+}
+
+void handlePutAnimStatus() 
+{
+  String csv = server.arg("plain");
+  int index = state.animFromString(csv);
+  if (index >= 0)
+  {
+    StartStateAnimation(index);
+  }
+  server.send(200);
 }
 
 void handleNotFound()
@@ -103,39 +120,6 @@ void handleResetWifi()
   delay(5000);
 }
 
-//void handleColor()
-//{
-//  String colArg;
-//  
-//  if (server.hasArg("rgb"))
-//  {
-//    colArg = server.arg("rgb");
-//    unsigned long number = strtoul(colArg.c_str(), NULL, 16);
-//    state.color1 = RgbwColor((number >> 16) & 0xFF, (number >> 8) & 0xFF, number & 0xFF, 0);
-//  }
-//  else if (server.hasArg("rgbw"))
-//  {
-//    colArg = server.arg("rgbw");
-//    unsigned long number = strtoul(colArg.c_str(), NULL, 16);
-//    state.color1 = RgbwColor((number >> 24) & 0xFF, (number >> 16) & 0xFF, (number >> 8) & 0xFF, number & 0xFF);    
-//  }
-//  else if (server.hasArg("hsl"))
-//  {
-//    colArg = server.arg("hsl");    
-//    unsigned long number = strtoul(colArg.c_str(), NULL, 16);
-//    unsigned char h = (number >> 16) & 0xFF;
-//    float s = (float)((number >> 8) & 0xFF) / (float)255;
-//    float l = (float)(number & 0xFF) / (float)255;
-//    state.color1 = hsi2rgbw(h, s, l);    
-//  }
-//  else
-//  {
-//    server.send(400, "text/plain", "Expeceted rgb, rgbw, or hsl argument.");
-//    return;
-//  }
-//  redirectToRoot();
-//}
-
 void redirectToRoot()
 {
   server.sendHeader("Location", "/");
@@ -147,6 +131,8 @@ void webServerSetup()
   server.on("/info", handleGetInfo);
   server.on("/status", HTTP_GET, handleGetStatus);
   server.on("/status", HTTP_PUT, handlePutStatus);
+  server.on("/anim", HTTP_GET, handleGetAnimStatus);
+  server.on("/anim", HTTP_PUT, handlePutAnimStatus);
   server.on("/resetwifi", handleResetWifi);
   server.onNotFound(handleNotFound);
   server.begin();

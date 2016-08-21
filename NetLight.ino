@@ -28,13 +28,20 @@
 #include "ColorUtil.h"
 #include "EspDebug.h"
 
-#define TARGET_RUDY
+#define TARGET_NETLIGHT_MK1
 
-#ifdef TARGET_NETLIGHT
+#ifdef TARGET_NETLIGHT_PROTO
 #define HOSTNAME "NETLIGHT-" ///< Hostname. The setup function adds the Chip ID at the end.
 const uint16_t PixelCount = 19; // Star
 const uint8_t PixelPin = 2;       // Pin 2, but actually ignored by library for Esp8266
 NeoPixelBus<NeoGrbwFeature, NeoEsp8266Uart800KbpsMethod> strip(PixelCount, PixelPin);
+#endif
+
+#ifdef TARGET_NETLIGHT_MK1
+#define HOSTNAME "NETLIGHT-" ///< Hostname. The setup function adds the Chip ID at the end.
+const uint16_t PixelCount = 7; // Jewel
+const uint8_t PixelPin = 3;       // Pin 3, but actually ignored by library for Esp8266 // Sculpture
+NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 #endif
 
 #ifdef TARGET_RUDY
@@ -56,19 +63,12 @@ WiFiManager wifiManager;
 ESP8266WebServer server(80);
 bool shouldSaveConfig = false;
 
-#define colorSaturation 128
-NeoPixelAnimator animations(1);
+NeoPixelAnimator animations(ANIM_CHANELS);
 RgbwColor black(0);
 RgbwColor red(255, 0, 0);
 RgbwColor green(0, 255, 0);
 RgbwColor blue(0, 0, 255);
 RgbwColor currentColour(0, 0, 0, 0);
-//struct MyAnimationState
-//{
-//    RgbwColor StartingColor;
-//    RgbwColor EndingColor;
-//};
-//MyAnimationState animationState[1];
 
 void setRandomSeed()
 {
@@ -230,6 +230,9 @@ void setup()
   strip.ClearTo(black);
   strip.Show();
   espDebug.println("neopixel started");
+
+  // Initial animation state
+  state.animationStates[0].lightMode = LIGHTMODE_FIXED;
 }
 
 void loop()
@@ -248,12 +251,16 @@ void loop()
   if (state.lightEnabled)
   {
     // Update animation
-    if (!animations.IsAnimating())
+    for (int i = 0; i < ANIM_CHANELS; i ++)
     {
-      StartStateAnimation();
+      if (!animations.IsAnimationActive(i))
+      {
+        StartStateAnimation(i);
+      }
     }
-
     animations.UpdateAnimations();
+
+    ApplyBrightnessToStrip();
     strip.Show();
   }
   else

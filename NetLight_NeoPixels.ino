@@ -1,17 +1,24 @@
 RgbwColor targetColour(0, 0, 0, 0);
 
-void StartStateAnimation()
+void StartStateAnimation(int index)
 {
-  espDebug.println("StartStateAnimation");  
-  switch (state.lightMode)
+  switch (state.animationStates[index].lightMode)
   {
     case LIGHTMODE_FIXED:
       espDebug.println("LIGHTMODE_FIXED");  
-      animations.StartAnimation(0, 10000, LightModeFixed);
+      animations.StartAnimation(index, 10000, LightModeFixed);
       break;
     case LIGHTMODE_CYCLE_RAINBOW:
       espDebug.println("LIGHTMODE_CYCLE_RAINBOW");  
-      animations.StartAnimation(0, random(state.time1_min, state.time1_max), LightModeRainbow);
+      animations.StartAnimation(index, random(state.animationStates[index].time1_min, state.animationStates[index].time1_max), LightModeRainbow);
+      break;
+    case LIGHTMODE_CYCLE_TWO_COLOR:
+      espDebug.println("LIGHTMODE_CYCLE_TWO_COLOR");  
+      animations.StartAnimation(index, random(state.animationStates[index].time1_min, state.animationStates[index].time1_max), LightModeCycleTwoColor);
+      break;
+    case LIGHTMODE_SPARKLES:
+      espDebug.println("LIGHTMODE_SPARKLES");  
+      animations.StartAnimation(index, random(state.animationStates[index].time1_min, state.animationStates[index].time1_max), LightModeSparkles);
       break;
   }
 }
@@ -19,8 +26,7 @@ void StartStateAnimation()
 // Fixed colour
 void LightModeFixed(const AnimationParam& param)
 {
-  targetColour = state.color1;
-  targetColour.Darken(255 - state.lightLevel);
+  targetColour = state.animationStates[param.index].color1;
   strip.ClearTo(targetColour);
 }
 
@@ -28,45 +34,32 @@ void LightModeFixed(const AnimationParam& param)
 void LightModeRainbow(const AnimationParam& param)
 {
   targetColour = Wheel(param.progress * 255);
-  targetColour.Darken(255 - state.lightLevel);
   strip.ClearTo(targetColour);
 }
 
-//// simple blend function
-//void BlendAnimUpdate(const AnimationParam& param)
-//{
-//    // this gets called for each animation on every time step
-//    // progress will start at 0.0 and end at 1.0
-//    // we use the blend function on the RgbColor to mix
-//    // color based on the progress given to us in the animation
-//    RgbwColor updatedColor = RgbwColor::LinearBlend(
-//        animationState[param.index].StartingColor,
-//        animationState[param.index].EndingColor,
-//        param.progress);
-//
-//    // apply the color to the strip
-//    for (uint16_t pixel = 0; pixel < PixelCount; pixel++)
-//    {
-//        strip.SetPixelColor(pixel, updatedColor);
-//    }
-//}
-//
-//void FlowBlendAnimUpdate(const AnimationParam& param)
-//{
-//    RgbwColor updatedColor = RgbwColor::LinearBlend(
-//        animationState[param.index].StartingColor,
-//        animationState[param.index].EndingColor,
-//        param.progress);
-//
-//    // Cycle all the pixels down one
-//    for (uint16_t pixel = 1; pixel < PixelCount; pixel++)
-//    {
-//        strip.SetPixelColor(pixel, strip.GetPixelColor(pixel - 1));
-//    }
-//
-//    // Add the next blended colour at the start of the strip
-//    strip.SetPixelColor(0, updatedColor);
-//}
+// Cycle between two colors - cycle through rainbow
+void LightModeCycleTwoColor(const AnimationParam& param)
+{
+  float progress = param.progress * 2;
+  if (progress > 1)
+  {
+    progress = 2 - progress;
+  }
+  targetColour = RgbwColor::LinearBlend(
+        state.animationStates[param.index].color1,
+        state.animationStates[param.index].color2,
+        progress);
+  strip.ClearTo(targetColour);  
+}
+
+// Select some random pixels (10%), and set them to the given colour
+void LightModeSparkles(const AnimationParam& param)
+{
+  int numSparkles = PixelCount / 10;
+  for (int i = 0; i < numSparkles; i ++) {    
+    strip.SetPixelColor(random(PixelCount), state.animationStates[param.index].color1);
+  }
+}
 
 RgbwColor Wheel(byte WheelPos)
 {
@@ -87,8 +80,12 @@ RgbwColor Wheel(byte WheelPos)
     }
 }
 
-RgbwColor ScaleRGB(RgbwColor in, byte scale)
+void ApplyBrightnessToStrip()
 {
-  return RgbwColor((uint16_t)in.R * scale / 255, (uint16_t)in.G * scale / 255, (uint16_t)in.B * scale / 255, 255 - scale);
+    int numPixelBytes = strip.PixelsSize();
+    uint8_t* pixels = strip.Pixels();
+    for (int i = 0; i < numPixelBytes; i ++)
+    {
+      pixels[i] = (uint16_t)pixels[i] * state.lightLevel / 256;
+    }
 }
-
